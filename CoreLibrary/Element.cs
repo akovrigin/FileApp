@@ -10,21 +10,24 @@ namespace CoreLibrary
     {
         protected string CopyPrefix = "Copy of ";
 
-        public int Id { get; set; }
-        public int? ParentId { get; set; }
+        public long Id { get; set; }
+        public long ParentId { get; set; }
 
         public string Name { get; set; }
 
         protected Element(string name)
         {
+            //if (string.IsNullOrEmpty(name))
+            //    return;
+
             Name = name;
-            Id = Storage.Insert(this);
+            //Id = Storage.Instance.Insert(this); //TODO: Может быть в Folder.Add() создавать? Но там не получается. Проверить.
         }
 
         public IElement Rename(string name)
         {
             Name = name;
-            Storage.Update(this);
+            Storage.Instance.Update(this);
             return this;
         }
 
@@ -35,7 +38,7 @@ namespace CoreLibrary
 
         public void Delete()
         {
-            Storage.Delete(this);
+            Storage.Instance.Delete(this);
         }
 
         public abstract IElement Clone();

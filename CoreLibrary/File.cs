@@ -10,14 +10,14 @@ namespace CoreLibrary
     {
         public long Size { get; set; }
 
-        public File(string name, object data) : base(name)
+        public File(string name, string data) : base(name)
         {
             SetData(data);
             Size = CalcSize(data);
             Processing = new Processing();
         }
 
-        public File(string name, object data, IProcessibility processing) : base(name)
+        public File(string name, string data, IProcessibility processing) : base(name)
         {
             SetData(data);
             Size = CalcSize(data);
@@ -35,15 +35,15 @@ namespace CoreLibrary
             return Size;
         }
 
-        public object GetData()
+        public string GetData()
         {
             //TODO: Download: this action should stream the file to the user’s browser
-            return Storage.GetData(Id);
+            return Storage.Instance.GetData(this);
         }
 
-        public void SetData(object data)
+        public void SetData(string data)
         {
-            Storage.SetData(Id, data);
+            Storage.Instance.SetData(this, data);
         }
 
         public override IElement Clone()

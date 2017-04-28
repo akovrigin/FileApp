@@ -51,7 +51,7 @@ namespace UnitTests
 
         public FolderTest()
         {
-            Settings.Storage = StorageType.Memory;
+            //Storage.Type = StorageType.InMemory;
         }
 
         private static IContainer _mainFolder;

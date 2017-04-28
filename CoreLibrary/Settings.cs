@@ -7,16 +7,9 @@ using System.Threading.Tasks;
 
 namespace CoreLibrary
 {
-    public enum StorageType
-    {
-        Memory,
-        FileSystem,
-        DataBase
-    }
-
     public class Settings
     {
-        public static readonly string MainFolder;
+        public static string MainFolder;
 
         static Settings()
         {
@@ -26,7 +19,5 @@ namespace CoreLibrary
         public static string RelativePath;
 
         public static string FullPath => MainFolder + RelativePath;
-
-        public static StorageType Storage = StorageType.Memory;
     }
 }

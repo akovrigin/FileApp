@@ -8,8 +8,8 @@ namespace CoreLibrary
 {
     public interface IElement
     {
-        int Id { get; set; }
-        int? ParentId { get; set; }
+        long Id { get; set; }
+        long ParentId { get; set; }
         string Name { get; set; }
         IElement Rename(string name);
         long GetSize();
@@ -38,8 +38,8 @@ namespace CoreLibrary
 
     public interface IHasData
     {
-        object GetData();
-        void SetData(object data);
+        string GetData();
+        void SetData(string data);
     }
 
     public interface IVisitor
