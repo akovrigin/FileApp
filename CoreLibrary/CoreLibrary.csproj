@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataBaseStorage.cs" />
+    <Compile Include="FileSystemStorage.cs" />
+    <Compile Include="InMemoryStorage.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="EditVisitor.cs" />
     <Compile Include="Element.cs" />

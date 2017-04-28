@@ -18,17 +18,11 @@ namespace CoreLibrary
 
         public IContainer Add(IElement element)
         {
-            Actualize(element);
+            Storage.Instance.Insert(element, this);
 
             GetChildren().Add(element);
 
             return this;
-        }
-
-        private void Actualize(IElement element)
-        {
-            //Storage.Instance.SetRelation(element, this);
-            Storage.Instance.Insert(element, this);
         }
 
         public IContainer Remove(IElement element)
@@ -45,7 +39,7 @@ namespace CoreLibrary
             if (_elements == null)
             {
                 _elements = Storage.Instance.GetElements(this);
-                _elements.ForEach(Actualize);
+                _elements.ForEach(e => Storage.Instance.Insert(e, this));
             }
 
             return _elements;

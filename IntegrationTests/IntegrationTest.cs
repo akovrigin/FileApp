@@ -25,25 +25,26 @@ namespace UnitTests
             Assert.Equal(25, size);
         }
 
-        [Fact]
-        public void CreateDirectory_CheckIfCreated_DeleteDirectory_CheckIfDeleted()
-        {
-            var mainFolder = new Folder("");
-
-            var dir = new Folder("Test");
-            mainFolder.Add(dir);
-
-            var dirInfo = new DirectoryInfo(Storage.Instance.GetPath(dir.Id) + dir.Name);
-
-            Assert.True(dirInfo.Exists);
-
-            mainFolder.Remove(dir);
-
-            //dir.Delete();
-
-            dirInfo = new DirectoryInfo(Storage.Instance.GetPath(dir.Id) + dir.Name);
-
-            Assert.True(!dirInfo.Exists);
-        }
+        //TODO: Подумать, как протестировать создание и удаление файлов и директорий
+//        [Fact]
+//        public void CreateDirectory_CheckIfCreated_DeleteDirectory_CheckIfDeleted()
+//        {
+//            var mainFolder = new Folder("");
+//
+//            var dir = new Folder("Test");
+//            mainFolder.Add(dir);
+//
+//            var dirInfo = new DirectoryInfo(Storage.Instance.GetPath(dir.Id) + dir.Name);
+//
+//            Assert.True(dirInfo.Exists);
+//
+//            mainFolder.Remove(dir);
+//
+//            //dir.Delete();
+//
+//            dirInfo = new DirectoryInfo(Storage.Instance.GetPath(dir.Id) + dir.Name);
+//
+//            Assert.True(!dirInfo.Exists);
+//        }
     }
 }
