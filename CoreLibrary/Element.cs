@@ -12,6 +12,7 @@ namespace CoreLibrary
 
         public int Id { get; set; }
         public int? ParentId { get; set; }
+
         public string Name { get; set; }
 
         protected Element(string name)
@@ -27,7 +28,7 @@ namespace CoreLibrary
             return this;
         }
 
-        public virtual int GetSize()
+        public virtual long GetSize()
         {
             return 0;
         }

@@ -8,7 +8,7 @@ namespace CoreLibrary
 {
     public class File : Element, IHasData
     {
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         public File(string name, object data) : base(name)
         {
@@ -30,7 +30,7 @@ namespace CoreLibrary
             return data?.ToString().Length ?? 0;
         }
 
-        public override int GetSize()
+        public override long GetSize()
         {
             return Size;
         }

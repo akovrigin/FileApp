@@ -12,7 +12,7 @@ namespace CoreLibrary
         int? ParentId { get; set; }
         string Name { get; set; }
         IElement Rename(string name);
-        int GetSize();
+        long GetSize();
         void Delete();
         IElement Clone();
         void Accept(IVisitor visitor);

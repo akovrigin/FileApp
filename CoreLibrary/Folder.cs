@@ -8,7 +8,9 @@ namespace CoreLibrary
 {
     public class Folder : Element, IContainer
     {
-        private readonly List<IElement> _elements = new List<IElement>();
+        private List<IElement> _elements;
+
+        protected string RelativePath;
 
         public Folder(string name) : base(name)
         {
@@ -16,33 +18,43 @@ namespace CoreLibrary
 
         public IContainer Add(IElement element)
         {
-            _elements.Add(element);
-            element.ParentId = Id;
+            GetChildren().Add(element);
+
+            Storage.SetRelation(element, this);
+
             return this;
         }
 
         public IContainer Remove(IElement element)
         {
-            _elements.Remove(element);
+            _elements?.Remove(element);
+
             element.Delete();
+
             return this;
         }
 
         public List<IElement> GetChildren()
         {
+            if (_elements == null)
+            {
+                _elements = Storage.GetElements(this);
+                _elements.ForEach(e => Storage.SetRelation(e, this));
+            }
+
             return _elements;
         }
 
-        public override int GetSize()
+        public override long GetSize()
         {
-            return _elements.Sum(e => e.GetSize());
+            return GetChildren().Sum(e => e.GetSize());
         }
 
         public override IElement Clone()
         {
             var clone = new Folder(Name);
 
-            foreach (var element in _elements)
+            foreach (var element in GetChildren())
                 clone.Add(element.Clone());
 
             return clone;
