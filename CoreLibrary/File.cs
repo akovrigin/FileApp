@@ -12,8 +12,15 @@ namespace CoreLibrary
 
         public File(string name, string data) : base(name)
         {
-            SetData(data);
+            if (!string.IsNullOrEmpty(data))
+                SetData(data);
             Size = CalcSize(data);
+            Processing = new Processing();
+        }
+
+        public File(string name) : base(name)
+        {
+            Size = Storage.Instance.GetPhysicalSize(this);
             Processing = new Processing();
         }
 

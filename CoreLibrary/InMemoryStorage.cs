@@ -48,5 +48,15 @@ namespace CoreLibrary
         {
             return new List<IElement>();
         }
+
+        public IElement GetElement(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetPhysicalSize(IElement element)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

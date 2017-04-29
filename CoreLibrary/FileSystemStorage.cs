@@ -23,6 +23,19 @@ namespace CoreLibrary
             return Settings.FullPath + GetRelation(id);
         }
 
+//        public IElement GetElement(string path)
+//        {
+//            var dirInfo = new DirectoryInfo(path);
+//            if (dirInfo.Exists)
+//                return new Folder(path.Split('\\').Last());
+//
+//            var fileInfo = new FileInfo(path);
+//            if (fileInfo.Exists)
+//                return new File(path.Split('\\').Last());
+//
+//            return null;
+//        }
+
         public long Insert(IElement element, IContainer parent)
         {
             element.ParentId = parent.Id;
@@ -97,6 +110,19 @@ namespace CoreLibrary
                 return sr.ReadToEnd();
         }
 
+        public long GetPhysicalSize(IElement element)
+        {
+            if (element is File)
+            {
+                var path = GetPath(element.Id) + element.Name;
+                var fi = new FileInfo(path);
+
+                return fi.Exists ? fi.Length : 0;
+            }
+
+            return 0;
+        }
+
         public void SetData(IElement element, string data)
         {
             if (data == null)
@@ -119,6 +145,9 @@ namespace CoreLibrary
             var list = new List<IElement>();
 
             var dir = new DirectoryInfo(Settings.FullPath + GetRelation(element.Id) + element.Name);
+
+            if (!dir.Exists)
+                return list;
 
             var dirList = dir.EnumerateDirectories().Select(dirInfo => new Folder(dirInfo.Name));
 
