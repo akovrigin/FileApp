@@ -27,9 +27,10 @@
             <h4>Folders and files</h4>
             <p>
                 <telerik:RadTreeView ID="RadTreeView1" 
-                    RenderMode="Lightweight"  Width="100%" Height="20em"
+                    RenderMode="Lightweight"  Width="100%" Height="40em"
                     OnClientNodeClicking="onNodeClicking"
                     OnClientNodeExpanded="onNodeExpanded"
+                    OnClientContextMenuItemClicked="onContextMenuItemClicked"
                     runat="server">
                     <Nodes>
                         <telerik:RadTreeNode Text="Root" Expanded="False">
@@ -39,6 +40,38 @@
                             </Nodes>
                         </telerik:RadTreeNode>
                     </Nodes>
+                    <ContextMenus>
+                        <telerik:RadTreeViewContextMenu ID="ContextMenuFolder" runat="server">
+                            <Items>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Delete" Value="1">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Rename" Value="2">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Copy" Value="3">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Upload" Value="4">
+                                </telerik:RadMenuItem>
+                            </Items>
+                        </telerik:RadTreeViewContextMenu>
+                        <telerik:RadTreeViewContextMenu ID="ContextMenuFile" runat="server">
+                            <Items>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Delete" Value="1">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Rename" Value="2">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Copy" Value="3">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Download" Value="5">
+                                </telerik:RadMenuItem>
+                            </Items>
+                        </telerik:RadTreeViewContextMenu>
+                        <telerik:RadTreeViewContextMenu ID="ContextMenuRoot" runat="server">
+                            <Items>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Just select something else" Value="100">
+                                </telerik:RadMenuItem>
+                            </Items>
+                        </telerik:RadTreeViewContextMenu>
+                    </ContextMenus>
                 </telerik:RadTreeView>
             </p>
             <p>
@@ -76,6 +109,7 @@
                 var node0 = treeView.get_nodes().getNode(0);
                 node0.set_imageUrl(folderImg);
                 node0.set_text(document.getElementById('MainFolder').value);
+                node0.set_contextMenuID('ContextMenuRoot');
             });
 
         window.addNode = function (currentNode, id, text, isFolder) {
@@ -89,6 +123,8 @@
             node.set_text(text);
 
             var img = isFolder ? folderImg : fileImg;
+
+            node.set_contextMenuID(isFolder ? 'ContextMenuFolder' : 'ContextMenuFile');
 
             node.set_imageUrl(img);
             //Add the new node as the child of the selected node or the treeview if no node is selected
@@ -118,6 +154,37 @@
             return false;
         };
 
+        function onContextMenuItemClicked(sender, args) {
+
+            var operation = args.get_menuItem().get_value();
+
+            if (operation == 100)
+                return;
+
+            var node = args.get_node();
+
+            node.select();
+
+            var newName = null;
+
+            if (operation == 2) {
+                newName = prompt("Please enter new name", node.get_text()).trim();
+                if (newName == '')
+                    return;
+                node.set_text(newName);
+            }
+
+            request(operation, node, isFolder(node), node.get_toolTip(), newName);
+
+            if (operation == 1) {
+                node.get_parent().get_nodes().remove(node);
+            }
+            else if (operation == 2) {
+                node.get_nodes().clear();
+                node.set_toolTip(node.get_parent().get_toolTip() + '\\' + newName);
+            }
+        }
+
         function onNodeClicking(sender, args) {
             //alert("OnClientNodeClicking: " + args.get_node().get_text());
 //            var path = '';
@@ -135,11 +202,15 @@
             var parent = treeView.get_selectedNode();
             parent.get_nodes().clear();
 
-            var isFolder = args.get_node().get_imageUrl() === folderImg;
-            getChildren(isFolder, args.get_node().get_toolTip());
+            request(0, args.get_node(), isFolder(args.get_node()), args.get_node().get_toolTip(), null);
         }
 
-        function setChildren(elements) {
+        function isFolder(node) {
+            return node.get_imageUrl() === folderImg;
+        }
+
+        function setChildren(node, elements) {
+            //node.get_nodes().clear();
             document.getElementById('meta').innerText = elements.Meta;
             for (var i = 0; i < elements.Items.length; i++) {
                 var el = elements.Items[i];
@@ -147,7 +218,7 @@
             }
         }
 
-        function getChildren(isFolder, path) {
+        function request(operation, node, isFolder, path, option) {
 
             path = path.replace(/\\/g, '|');
 
@@ -156,10 +227,11 @@
                 dataType: "json",
                 contentType: "application/json; charset=utf-8",
                 url: "Default.aspx/GetChildren",
-                data: "{'isFolder': '" + isFolder + "', 'path':'" + path + "'}",
+                data: "{'operation' :'" + operation + "', 'isFolder': '" + isFolder + "', 'path':'" + path + "', 'option' : '" + option + "'}",
                 success: function(success) {
                     //alert("Success: " + success.d);
-                    setChildren(JSON.parse(success.d));
+                    if (isFolder || operation != 2)
+                        setChildren(node, JSON.parse(success.d));
                 },
                 error: function(xhr, textStatus, error) {
                     alert("Error: " + error);

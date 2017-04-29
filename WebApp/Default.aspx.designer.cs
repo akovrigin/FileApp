@@ -40,6 +40,33 @@ namespace WebApp {
         protected global::Telerik.Web.UI.RadTreeView RadTreeView1;
         
         /// <summary>
+        /// ContextMenuFolder элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::Telerik.Web.UI.RadTreeViewContextMenu ContextMenuFolder;
+        
+        /// <summary>
+        /// ContextMenuFile элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::Telerik.Web.UI.RadTreeViewContextMenu ContextMenuFile;
+        
+        /// <summary>
+        /// ContextMenuRoot элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::Telerik.Web.UI.RadTreeViewContextMenu ContextMenuRoot;
+        
+        /// <summary>
         /// meta элемент управления.
         /// </summary>
         /// <remarks>

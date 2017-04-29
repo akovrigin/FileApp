@@ -14,9 +14,15 @@ namespace CoreLibrary
         static Settings()
         {
             MainFolder = ConfigurationManager.AppSettings["MainFolder"];
+            if (MainFolder != null && !MainFolder.EndsWith("\\"))
+                MainFolder += "\\";
         }
 
-        public static string RelativePath;
+        private static string _relativePath;
+        public static string RelativePath{
+            get { return _relativePath; }
+            set { _relativePath = value.StartsWith("\\") ? value.Substring(1, value.Length - 1) : value; }
+        }
 
         public static string FullPath => MainFolder + RelativePath;
     }

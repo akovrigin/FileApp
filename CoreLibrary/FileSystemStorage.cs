@@ -63,19 +63,18 @@ namespace CoreLibrary
             return element.Id;
         }
 
-        //TODO: Как-то нелогично, команда "переименовать", но передается oldName, а не newName
-        public void Rename(IElement element, string oldName)
+        public void Rename(IElement element, string newName)
         {
             var path = GetPath(element.Id);
 
+            var o = path + element.Name;
+            var n = path + newName;
+
             if (element is File)
-            {
-                new FileInfo(path + oldName).MoveTo(path + element.Name);
-            }
+                new FileInfo(o).MoveTo(n);
             else if (element is Folder)
-            {
-                new DirectoryInfo(path + oldName).MoveTo(path + element.Name);
-            }
+                Directory.Move(o, n);
+                //new DirectoryInfo(o).MoveTo(n);
         }
 
         public long Update(IElement element)
@@ -97,7 +96,8 @@ namespace CoreLibrary
             {
                 var dirInfo = new DirectoryInfo(path + element.Name);
                 if (dirInfo.Exists)
-                    dirInfo.Delete();
+                    Directory.Delete(dirInfo.FullName, true);
+                    //dirInfo.Delete(true);
             }
         }
 

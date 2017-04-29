@@ -13,7 +13,7 @@ namespace CoreLibrary
             throw new NotImplementedException();
         }
 
-        public void Rename(IElement element, string oldName)
+        public void Rename(IElement element, string newName)
         {
             throw new NotImplementedException();
         }

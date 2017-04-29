@@ -20,7 +20,7 @@ namespace CoreLibrary
         }
 
         //TODO: Как-то нелогично, команда "переименовать", но передается oldName, а не newName
-        public void Rename(IElement element, string oldName)
+        public void Rename(IElement element, string newName)
         {
 
         }

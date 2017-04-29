@@ -32,18 +32,46 @@ namespace WebApp
 
         [WebMethod]
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public static string GetChildren(bool isFolder, string path)
+        public static string GetChildren(int operation, bool isFolder, string path, string option)
         {
-            Settings.RelativePath = path.Replace(Devider, '\\');
+            Settings.RelativePath = path = path.Replace(Devider, '\\');
 
-            var mainFolder = new Folder("");
+            var folder = new Folder("");
 
-            long size = isFolder ? mainFolder.GetSize() : new File("").GetSize();
+            var file = isFolder ? null : new File("");
+
+            var element = isFolder ? (IElement) folder : (IElement) file;
+
+            switch (operation)
+            {
+                case 1: // Delete
+                    element.Delete();
+                    //Settings.RelativePath = path.Replace(Devider, '\\');
+                    break;
+                case 2:
+                    //TODO: Оптимизировать этот кусок кода
+                    var last = path.Split('\\').Last();
+                    Settings.RelativePath = path.Substring(0, path.Length - last.Length);
+                    folder = new Folder(last);
+                    file = isFolder ? null : new File(last);
+
+                    element = isFolder ? (IElement)folder : (IElement)file;
+
+                    if (!string.IsNullOrWhiteSpace(option))
+                        element.Rename(option);
+
+                    break;
+                default:
+                // Just refresh
+                    break;
+            }
+
+            long size = isFolder ? folder.GetSize() : file.GetSize();
 
             var elements = new
             {
                 Meta = size,
-                Items = mainFolder.GetChildren().Select(e => new
+                Items = folder.GetChildren().Select(e => new
                 {
                     e.Id,
                     e.Name,

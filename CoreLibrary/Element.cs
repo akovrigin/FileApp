@@ -26,8 +26,8 @@ namespace CoreLibrary
 
         public IElement Rename(string name)
         {
+            Storage.Instance.Rename(this, name);
             Name = name;
-            Storage.Instance.Update(this);
             return this;
         }
 

@@ -17,7 +17,7 @@ namespace CoreLibrary
     public interface IStorage
     {
         long Insert(IElement element, IContainer parent);
-        void Rename(IElement element, string oldName);
+        void Rename(IElement element, string newName);
         long Update(IElement element);
         void Delete(IElement element);
         string GetData(IElement element);
