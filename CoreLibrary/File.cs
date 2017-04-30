@@ -53,9 +53,9 @@ namespace CoreLibrary
             Storage.Instance.SetData(this, data);
         }
 
-        public override IElement Clone()
+        public override IElement Clone(string prefix)
         {
-            return new File(Name, GetData()) {Size = Size};
+            return new File(prefix + Name, GetData()) {Size = Size};
         }
 
         public IProcessibility Processing { private get; set; }

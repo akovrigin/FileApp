@@ -51,12 +51,15 @@ namespace CoreLibrary
             return GetChildren().Sum(e => e.GetSize());
         }
 
-        public override IElement Clone()
+        public override IElement Clone(string prefix)
         {
-            var clone = new Folder(Name);
+            var clone = new Folder(prefix + Name);
 
             foreach (var element in GetChildren())
-                clone.Add(element.Clone());
+            {
+                var elClone = element.Clone("");
+                clone.Add(elClone);
+            }
 
             return clone;
         }

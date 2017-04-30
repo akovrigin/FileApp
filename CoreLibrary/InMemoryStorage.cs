@@ -58,5 +58,16 @@ namespace CoreLibrary
         {
             throw new NotImplementedException();
         }
+
+        public IElement DeepCopy(IElement element, string newName)
+        {
+            throw new NotImplementedException();
+
+            //TODO: Нужно ли это?
+            //            var clone = element.Clone(CopyPrefix);
+            //            //clone.Name = CopyPrefix + clone.Name;
+            //            container.Add(clone);
+            //            return clone;
+        }
     }
 }

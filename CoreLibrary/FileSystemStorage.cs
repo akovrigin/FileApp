@@ -48,6 +48,7 @@ namespace CoreLibrary
 
             if (element is File)
             {
+                //TODO: Не всегда файл "отпускается". Понять, как его  отпустить.
                 var fileInfo = new FileInfo(path + element.Name);
                 if (!fileInfo.Exists)
                     fileInfo.Create();
@@ -74,7 +75,7 @@ namespace CoreLibrary
                 new FileInfo(o).MoveTo(n);
             else if (element is Folder)
                 Directory.Move(o, n);
-                //new DirectoryInfo(o).MoveTo(n);
+            //new DirectoryInfo(o).MoveTo(n);
         }
 
         public long Update(IElement element)
@@ -96,8 +97,9 @@ namespace CoreLibrary
             {
                 var dirInfo = new DirectoryInfo(path + element.Name);
                 if (dirInfo.Exists)
+                    //TODO: Bug: Don't know why, but sometimes recursive parameter doesn't work
                     Directory.Delete(dirInfo.FullName, true);
-                    //dirInfo.Delete(true);
+                //dirInfo.Delete(true);
             }
         }
 
@@ -149,14 +151,61 @@ namespace CoreLibrary
             if (!dir.Exists)
                 return list;
 
-            var dirList = dir.EnumerateDirectories().Select(dirInfo => new Folder(dirInfo.Name));
+            try
+            {
+                var dirList = dir.EnumerateDirectories().Select(dirInfo => new Folder(dirInfo.Name));
 
-            var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name, null) {Size = fileInfo.Length});
+                var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name, null) {Size = fileInfo.Length});
 
-            list.AddRange(dirList);
-            list.AddRange(fileList);
+                list.AddRange(dirList);
+                list.AddRange(fileList);
+            }
+            catch (Exception e)
+            {
+                // If some problems with the folder, then we don't have to get it's elements
+            }
 
             return list;
+        }
+
+        public IElement DeepCopy(IElement element, string newName)
+        {
+            string src = Settings.FullPath + element.Name;
+            string dest = Settings.FullPath + newName;
+
+            if (element is File)
+            {
+                var fi = new FileInfo(src);
+                System.IO.File.Copy(fi.FullName, fi.DirectoryName + Path.DirectorySeparatorChar + newName, true);
+            }
+            else
+            {
+                _DeepCopy(src, dest);
+            }
+
+            return element;
+        }
+
+        private void _DeepCopy(string src, string dest)
+        {
+            //TODO: Path.DirectorySeparatorChar - это должно быть везде, а не только здесь
+            if (dest[dest.Length - 1] != Path.DirectorySeparatorChar)
+                dest += Path.DirectorySeparatorChar;
+
+            if (!Directory.Exists(dest))
+                Directory.CreateDirectory(dest);
+
+            var files = Directory.GetFileSystemEntries(src);
+
+            foreach (string el in files)
+            {
+                // Sub directories
+                if (Directory.Exists(el))
+                    _DeepCopy(el, dest + Path.GetFileName(el));
+                // Files in directory
+                else
+                    System.IO.File.Copy(el, dest + Path.GetFileName(el), true);
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ namespace CoreLibrary
         List<IElement> GetElements(IElement element);
         //TODO: Удалить за ненадобностью? И в классах тоже.
         //IElement GetElement(string path); //TODO: Вероятно надо заменить path на id, чтобы и для БД подходило по смыслу
+        IElement DeepCopy(IElement element, string newName);
     }
 
     public class Storage

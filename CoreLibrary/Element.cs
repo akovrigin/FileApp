@@ -41,12 +41,23 @@ namespace CoreLibrary
             Storage.Instance.Delete(this);
         }
 
-        public abstract IElement Clone();
+        public abstract IElement Clone(string newName);
 
-        public IElement Copy(IContainer container)
+        public virtual IElement Copy(IContainer container)
         {
-            var clone = Clone();
-            clone.Name = CopyPrefix + clone.Name;
+            var newName = CopyPrefix + Name;
+
+            Storage.Instance.DeepCopy(this, newName);
+
+            return this;
+
+            //TODO: Нужно, чтобы правильно возвращалось значение
+            //return container.GetChildren().First(c => c.Name == newName);
+
+            //TODO: Или переделать под InMemory, или удалить
+            var clone = Clone(CopyPrefix);
+            //clone.Name = CopyPrefix + clone.Name;
+            container.Add(clone);
             return clone;
         }
 

@@ -14,7 +14,7 @@ namespace CoreLibrary
         IElement Rename(string name);
         long GetSize();
         void Delete();
-        IElement Clone();
+        IElement Clone(string newName);
         void Accept(IVisitor visitor);
     }
 

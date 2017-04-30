@@ -36,11 +36,64 @@ namespace WebApp
         {
             Settings.RelativePath = path = path.Replace(Devider, '\\');
 
+            var last = path.Split('\\').Last();
+            Settings.RelativePath = path.Substring(0, path.Length - last.Length);
+            var folder = new Folder(last);
+            var file = isFolder ? null : new File(last);
+
+            var element = isFolder ? (IElement) folder : (IElement) file;
+
+            switch (operation)
+            {
+                case 1: // Delete
+                    element.Delete();
+                    break;
+                case 2: // Rename
+                    if (!string.IsNullOrWhiteSpace(option))
+                        element.Rename(option);
+                    break;
+                case 3: // Copy
+                    var parent = new Folder("");
+                    var original = parent.GetChildren().First(c => c.Name == last);
+                    ((ICopiable) original).Copy(parent);
+                    break;
+                case 4: // New
+                    new Folder("").Add(new Folder(option));
+                    break;
+                default:
+                // Just refresh
+                    break;
+            }
+
+            long size = isFolder ? folder.GetSize() : file.GetSize();
+
+            var elements = new
+            {
+                Meta = size,
+                Items = folder.GetChildren().Select(e => new
+                {
+                    e.Id,
+                    e.Name,
+                    IsFolder = e is IContainer,
+                })
+            };
+
+            //TODO: убрать переменную res
+            var res = JsonConvert.SerializeObject(elements);
+            return res;
+        }
+
+        [WebMethod]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public static string GetChildren1(int operation, bool isFolder, string path, string option)
+        {
+            Settings.RelativePath = path = path.Replace(Devider, '\\');
+
             var folder = new Folder("");
 
             var file = isFolder ? null : new File("");
 
-            var element = isFolder ? (IElement) folder : (IElement) file;
+            var element = isFolder ? (IElement)folder : (IElement)file;
 
             switch (operation)
             {
@@ -62,7 +115,7 @@ namespace WebApp
 
                     break;
                 default:
-                // Just refresh
+                    // Just refresh
                     break;
             }
 
@@ -80,21 +133,6 @@ namespace WebApp
             };
 
             return JsonConvert.SerializeObject(elements);
-        }
-
-        [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public static string GetMetaData(string path)
-        {
-            var name = path.Split(Devider).Last();
-
-            Settings.RelativePath = path.Substring(0, path.Length - name.Length - 1).Replace(Devider, '\\'); ;
-
-            var folder = new Folder(name);
-
-            var size = folder.GetSize();
-
-            return size.ToString();
         }
     }
 }

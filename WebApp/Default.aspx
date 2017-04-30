@@ -49,7 +49,9 @@
                                 </telerik:RadMenuItem>
                                 <telerik:RadMenuItem runat="server" PostBack="False" Text="Copy" Value="3">
                                 </telerik:RadMenuItem>
-                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Upload" Value="4">
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="New" Value="4">
+                                </telerik:RadMenuItem>
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Upload" Value="5">
                                 </telerik:RadMenuItem>
                             </Items>
                         </telerik:RadTreeViewContextMenu>
@@ -61,7 +63,7 @@
                                 </telerik:RadMenuItem>
                                 <telerik:RadMenuItem runat="server" PostBack="False" Text="Copy" Value="3">
                                 </telerik:RadMenuItem>
-                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Download" Value="5">
+                                <telerik:RadMenuItem runat="server" PostBack="False" Text="Download" Value="6">
                                 </telerik:RadMenuItem>
                             </Items>
                         </telerik:RadTreeViewContextMenu>
@@ -117,9 +119,7 @@
             var treeView = demo.treeView;
             treeView.trackChanges();
 
-            //Instantiate a new client node
             var node = new Telerik.Web.UI.RadTreeNode();
-            //Set its text
             node.set_text(text);
 
             var img = isFolder ? folderImg : fileImg;
@@ -127,20 +127,15 @@
             node.set_contextMenuID(isFolder ? 'ContextMenuFolder' : 'ContextMenuFile');
 
             node.set_imageUrl(img);
-            //Add the new node as the child of the selected node or the treeview if no node is selected
+
             var parent = treeView.get_selectedNode() || treeView;
 
             if (currentNode == null) {
-                //alert('1 - ' + text);
                 parent.get_nodes().add(node);
-                //alert('2 - ' + text);
             } else {
-                //alert('3 - ' + text);
                 currentNode.get_nodes().add(node);
-                //alert('4 - ' + text);
             }
 
-            //Expand the parent if it is not the treeview
             if (parent != treeView && !parent.get_expanded())
                 parent.set_expanded(true);
 
@@ -168,10 +163,15 @@
             var newName = null;
 
             if (operation == 2) {
-                newName = prompt("Please enter new name", node.get_text()).trim();
+                newName = prompt('Please enter a new name', node.get_text()).trim();
                 if (newName == '')
                     return;
                 node.set_text(newName);
+            }
+            else if (operation == 4) {
+                newName = prompt('Please enter a name', 'New folder').trim();
+                if (newName == '')
+                    return;
             }
 
             request(operation, node, isFolder(node), node.get_toolTip(), newName);
@@ -232,28 +232,14 @@
                     //alert("Success: " + success.d);
                     if (isFolder || operation != 2)
                         setChildren(node, JSON.parse(success.d));
+                    if (operation == 3 || operation == 4) {
+                        var parent = node.get_parent();
+                        parent.get_nodes().clear();
+                        parent.select();
+                        request(0, parent, isFolder, parent.get_toolTip(), null);
+                    }
                 },
                 error: function(xhr, textStatus, error) {
-                    alert("Error: " + error);
-                }
-            });
-        }
-
-        function getMetaData(currentNode, path) {
-
-            path = path.replace(/\\/g, '|');
-
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                url: "Default.aspx/GetMetaData",
-                data: "{'path':'" + path + "'}",
-                success: function (success) {
-                    //alert("Success: " + success.d);
-                    document.getElementById('meta').innerText = success.d;
-                },
-                error: function (xhr, textStatus, error) {
                     alert("Error: " + error);
                 }
             });

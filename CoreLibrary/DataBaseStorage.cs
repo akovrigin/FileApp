@@ -52,5 +52,10 @@ namespace CoreLibrary
         {
             throw new NotImplementedException();
         }
+
+        public IElement DeepCopy(IElement element, string newName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
