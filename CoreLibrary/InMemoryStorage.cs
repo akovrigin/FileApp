@@ -35,12 +35,12 @@ namespace CoreLibrary
             throw new NotImplementedException();
         }
 
-        public string GetData(IElement element)
+        public byte[] GetData(IElement element)
         {
-            return string.Empty;
+            return null;
         }
 
-        public void SetData(IElement element, string data)
+        public void SetData(IElement element, byte[] data)
         {
         }
 

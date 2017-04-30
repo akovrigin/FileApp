@@ -10,10 +10,9 @@ namespace CoreLibrary
     {
         public long Size { get; set; }
 
-        public File(string name, string data) : base(name)
+        public File(string name, byte[] data) : base(name)
         {
-            if (!string.IsNullOrEmpty(data))
-                SetData(data);
+            SetData(data);
             Size = CalcSize(data);
             Processing = new Processing();
         }
@@ -24,7 +23,7 @@ namespace CoreLibrary
             Processing = new Processing();
         }
 
-        public File(string name, string data, IProcessibility processing) : base(name)
+        public File(string name, byte[] data, IProcessibility processing) : base(name)
         {
             SetData(data);
             Size = CalcSize(data);
@@ -42,13 +41,13 @@ namespace CoreLibrary
             return Size;
         }
 
-        public string GetData()
+        public byte[] GetData()
         {
             //TODO: Download: this action should stream the file to the user’s browser
             return Storage.Instance.GetData(this);
         }
 
-        public void SetData(string data)
+        public void SetData(byte[] data)
         {
             Storage.Instance.SetData(this, data);
         }

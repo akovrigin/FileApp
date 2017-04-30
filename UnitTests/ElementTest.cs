@@ -13,7 +13,7 @@ namespace UnitTests
         [Fact]
         public void FileVisitor_SetEditVisitorAndExecuteTwice_IsModifiedAlwaysTrue()
         {
-            var file = new File("test.txt", "xxx");
+            var file = new File("test.txt", new byte[]{35, 33, 36});
 
             var visitor = new EditVisitor();
 

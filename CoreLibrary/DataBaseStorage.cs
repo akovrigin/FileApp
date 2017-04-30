@@ -28,12 +28,12 @@ namespace CoreLibrary
             throw new NotImplementedException();
         }
 
-        public string GetData(IElement element)
+        public byte[] GetData(IElement element)
         {
             throw new NotImplementedException();
         }
 
-        public void SetData(IElement element, string data)
+        public void SetData(IElement element, byte[] data)
         {
             throw new NotImplementedException();
         }

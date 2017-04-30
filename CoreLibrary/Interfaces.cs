@@ -38,8 +38,8 @@ namespace CoreLibrary
 
     public interface IHasData
     {
-        string GetData();
-        void SetData(string data);
+        byte[] GetData();
+        void SetData(byte[] data);
     }
 
     public interface IVisitor

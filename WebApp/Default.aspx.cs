@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Script.Services;
 using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using CoreLibrary;
 using Newtonsoft.Json;
+using File = CoreLibrary.File;
 
 namespace WebApp
 {
@@ -41,7 +44,7 @@ namespace WebApp
             var folder = new Folder(last);
             var file = isFolder ? null : new File(last);
 
-            var element = isFolder ? (IElement) folder : (IElement) file;
+            var element = isFolder ? (IElement)folder : (IElement)file;
 
             switch (operation)
             {
@@ -55,17 +58,20 @@ namespace WebApp
                 case 3: // Copy
                     var parent = new Folder("");
                     var original = parent.GetChildren().First(c => c.Name == last);
-                    ((ICopiable) original).Copy(parent);
+                    ((ICopiable)original).Copy(parent);
                     break;
                 case 4: // New
-                    new Folder("").Add(new Folder(option));
+                    //new Folder("").Add(new Folder(option));
+                    folder.Add(new Folder(option));
+                    break;
+                case 6:
                     break;
                 default:
-                // Just refresh
+                    // Just refresh
                     break;
             }
 
-            long size = isFolder ? folder.GetSize() : file.GetSize();
+            var size = isFolder ? folder.GetSize() : file.GetSize();
 
             var elements = new
             {
@@ -84,55 +90,59 @@ namespace WebApp
         }
 
         [WebMethod]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public static string GetChildren1(int operation, bool isFolder, string path, string option)
+        public static void DownloadFile(string path)
         {
+            try
+            {
+                Settings.RelativePath = path = path.Replace(Devider, '\\');
+
+                var last = path.Split('\\').Last();
+
+                Settings.RelativePath = path.Substring(0, path.Length - last.Length);
+
+                var folder = new Folder("");
+                var file = new File(last);
+                folder.Add(file);
+
+                var fileName = file.Name;
+                var data = file.GetData();
+
+                HttpContext.Current.Response.AddHeader("Content-disposition", "attachment;filename=" + fileName);
+                HttpContext.Current.Response.ContentType = "application/octet-stream";
+                HttpContext.Current.Response.BinaryWrite(data);
+
+                HttpContext.Current.Response.Flush();
+                HttpContext.Current.Response.Close();
+                HttpContext.Current.Response.End();
+            }
+            catch (Exception ex)
+            {
+                // ignored
+            }
+        }
+
+        [WebMethod]
+        public static string UploadFile(string path, string fileName, string based64BinaryString)
+        {
+            var base64 = "base64,";
+            var idx = based64BinaryString.IndexOf(base64, StringComparison.Ordinal);
+            var str = based64BinaryString.Substring(idx + base64.Length);
+
+            var data = Convert.FromBase64String(str);
+
             Settings.RelativePath = path = path.Replace(Devider, '\\');
 
-            var folder = new Folder("");
+            var last = path.Split('\\').Last();
 
-            var file = isFolder ? null : new File("");
+            Settings.RelativePath = path.Substring(0, path.Length - last.Length);
 
-            var element = isFolder ? (IElement)folder : (IElement)file;
+            var folder = new Folder(last);
+            var file = new File(fileName);
+            folder.Add(file);
 
-            switch (operation)
-            {
-                case 1: // Delete
-                    element.Delete();
-                    //Settings.RelativePath = path.Replace(Devider, '\\');
-                    break;
-                case 2:
-                    //TODO: Оптимизировать этот кусок кода
-                    var last = path.Split('\\').Last();
-                    Settings.RelativePath = path.Substring(0, path.Length - last.Length);
-                    folder = new Folder(last);
-                    file = isFolder ? null : new File(last);
+            file.SetData(data);
 
-                    element = isFolder ? (IElement)folder : (IElement)file;
-
-                    if (!string.IsNullOrWhiteSpace(option))
-                        element.Rename(option);
-
-                    break;
-                default:
-                    // Just refresh
-                    break;
-            }
-
-            long size = isFolder ? folder.GetSize() : file.GetSize();
-
-            var elements = new
-            {
-                Meta = size,
-                Items = folder.GetChildren().Select(e => new
-                {
-                    e.Id,
-                    e.Name,
-                    IsFolder = e is IContainer,
-                })
-            };
-
-            return JsonConvert.SerializeObject(elements);
+            return "ok";
         }
     }
 }

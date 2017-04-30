@@ -23,18 +23,18 @@ namespace CoreLibrary
             return Settings.FullPath + GetRelation(id);
         }
 
-//        public IElement GetElement(string path)
-//        {
-//            var dirInfo = new DirectoryInfo(path);
-//            if (dirInfo.Exists)
-//                return new Folder(path.Split('\\').Last());
-//
-//            var fileInfo = new FileInfo(path);
-//            if (fileInfo.Exists)
-//                return new File(path.Split('\\').Last());
-//
-//            return null;
-//        }
+        //        public IElement GetElement(string path)
+        //        {
+        //            var dirInfo = new DirectoryInfo(path);
+        //            if (dirInfo.Exists)
+        //                return new Folder(path.Split('\\').Last());
+        //
+        //            var fileInfo = new FileInfo(path);
+        //            if (fileInfo.Exists)
+        //                return new File(path.Split('\\').Last());
+        //
+        //            return null;
+        //        }
 
         public long Insert(IElement element, IContainer parent)
         {
@@ -48,10 +48,11 @@ namespace CoreLibrary
 
             if (element is File)
             {
+                //TODO: Создавать файл в момент аплоада
                 //TODO: Не всегда файл "отпускается". Понять, как его  отпустить.
-                var fileInfo = new FileInfo(path + element.Name);
-                if (!fileInfo.Exists)
-                    fileInfo.Create();
+//                var fileInfo = new FileInfo(path + element.Name);
+//                if (!fileInfo.Exists)
+//                    fileInfo.Create();
                 //TODO: Save data to file
             }
             else if (element is Folder)
@@ -103,13 +104,14 @@ namespace CoreLibrary
             }
         }
 
-        public string GetData(IElement element)
+        public byte[] GetData(IElement element)
         {
             var path = GetPath(element.Id) + element.Name;
-            var fi = new FileInfo(path);
-
-            using (var sr = fi.OpenText())
-                return sr.ReadToEnd();
+            var data = System.IO.File.ReadAllBytes(path);
+            return data;
+            //            var fi = new FileInfo(path);
+            //            using (var sr = fi.OpenText())
+            //                return sr.ReadToEnd();
         }
 
         public long GetPhysicalSize(IElement element)
@@ -125,18 +127,22 @@ namespace CoreLibrary
             return 0;
         }
 
-        public void SetData(IElement element, string data)
+        public void SetData(IElement element, byte[] data)
         {
             if (data == null)
                 return;
 
             var path = GetPath(element.Id) + element.Name;
+
+            //System.IO.File.WriteAllBytes(path, data);
+
             var fi = new FileInfo(path);
 
             using (var fs = fi.Create())
             {
-                var info = new UTF8Encoding(true).GetBytes(data);
-                fs.Write(info, 0, info.Length);
+                //var info = new UTF8Encoding(true).GetBytes(string);
+                //fs.Write(info, 0, info.Length);
+                fs.Write(data, 0, data.Length);
                 fs.Flush();
                 fs.Close();
             }
@@ -155,7 +161,7 @@ namespace CoreLibrary
             {
                 var dirList = dir.EnumerateDirectories().Select(dirInfo => new Folder(dirInfo.Name));
 
-                var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name, null) {Size = fileInfo.Length});
+                var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name, null) { Size = fileInfo.Length });
 
                 list.AddRange(dirList);
                 list.AddRange(fileList);

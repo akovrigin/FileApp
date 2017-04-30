@@ -20,8 +20,8 @@ namespace CoreLibrary
         void Rename(IElement element, string newName);
         long Update(IElement element);
         void Delete(IElement element);
-        string GetData(IElement element);
-        void SetData(IElement element, string data);
+        byte[] GetData(IElement element);
+        void SetData(IElement element, byte[] data);
         long GetPhysicalSize(IElement element);
         List<IElement> GetElements(IElement element);
         //TODO: Удалить за ненадобностью? И в классах тоже.
