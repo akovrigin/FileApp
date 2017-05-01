@@ -190,16 +190,10 @@
         }
 
         function onNodeClicking(sender, args) {
-            //alert("OnClientNodeClicking: " + args.get_node().get_text());
-//            var path = '';
-//            path = args.get_node().get_toolTip();
-//            getMetaData(args.get_node(), path);
-
             onNodeExpanded(sender, args);
         }
 
         function onNodeExpanded(sender, args) {
-            //alert("OnClientNodeExpanded: " + args.get_node().get_text());
             args.get_node().select();
 
             var treeView = demo.treeView;
@@ -214,7 +208,6 @@
         }
 
         function setChildren(node, elements) {
-            //node.get_nodes().clear();
             document.getElementById('meta').innerText = elements.Meta;
             for (var i = 0; i < elements.Items.length; i++) {
                 var el = elements.Items[i];
@@ -233,7 +226,7 @@
                 url: "Default.aspx/GetChildren",
                 data: "{'operation' :'" + operation + "', 'isFolder': '" + isFolder + "', 'path':'" + path + "', 'option' : '" + option + "'}",
                 success: function (response) {
-                    //alert("Success: " + success.d);
+                    //alert("Success: " + response.d);
                     if (isFolder || operation != 2)
                         setChildren(node, JSON.parse(response.d));
                     if (operation == 3) {

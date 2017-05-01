@@ -37,9 +37,9 @@ namespace WebApp
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public static string GetChildren(int operation, bool isFolder, string path, string option)
         {
-            Settings.RelativePath = path = path.Replace(Devider, '\\');
+            Settings.RelativePath = path = path.Replace(Devider, Path.DirectorySeparatorChar);
 
-            var last = path.Split('\\').Last();
+            var last = path.Split(Path.DirectorySeparatorChar).Last();
             Settings.RelativePath = path.Substring(0, path.Length - last.Length);
             var folder = new Folder(last);
             var file = isFolder ? null : new File(last);
@@ -61,7 +61,6 @@ namespace WebApp
                     ((ICopiable)original).Copy(parent);
                     break;
                 case 4: // New
-                    //new Folder("").Add(new Folder(option));
                     folder.Add(new Folder(option));
                     break;
                 case 6:
@@ -84,9 +83,7 @@ namespace WebApp
                 })
             };
 
-            //TODO: убрать переменную res
-            var res = JsonConvert.SerializeObject(elements);
-            return res;
+            return JsonConvert.SerializeObject(elements);
         }
 
         [WebMethod]
@@ -94,9 +91,9 @@ namespace WebApp
         {
             try
             {
-                Settings.RelativePath = path = path.Replace(Devider, '\\');
+                Settings.RelativePath = path = path.Replace(Devider, Path.DirectorySeparatorChar);
 
-                var last = path.Split('\\').Last();
+                var last = path.Split(Path.DirectorySeparatorChar).Last();
 
                 Settings.RelativePath = path.Substring(0, path.Length - last.Length);
 
@@ -130,9 +127,9 @@ namespace WebApp
 
             var data = Convert.FromBase64String(str);
 
-            Settings.RelativePath = path = path.Replace(Devider, '\\');
+            Settings.RelativePath = path = path.Replace(Devider, Path.DirectorySeparatorChar);
 
-            var last = path.Split('\\').Last();
+            var last = path.Split(Path.DirectorySeparatorChar).Last();
 
             Settings.RelativePath = path.Substring(0, path.Length - last.Length);
 

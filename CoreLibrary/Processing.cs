@@ -8,12 +8,12 @@ namespace CoreLibrary
 {
     public class Processing : IProcessibility
     {
-        public object Download(object data)
+        public byte[] Download(byte[] data)
         {
             return data;
         }
 
-        public object Upload(object data)
+        public byte[] Upload(byte[] data)
         {
             return data;
         }

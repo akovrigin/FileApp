@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CoreLibrary
 {
+    [Obsolete("There is no need in this class anymore. In accordance with the Requirements we have to use the file system.")]
     public class InMemoryStorage : IStorage
     {
         private static long _lastId;
@@ -16,10 +17,9 @@ namespace CoreLibrary
 
             element.Id = ++_lastId;
 
-            return element.Id; //TODO: Надо ли возвращаться id? Может для DataBase?
+            return element.Id;
         }
 
-        //TODO: Как-то нелогично, команда "переименовать", но передается oldName, а не newName
         public void Rename(IElement element, string newName)
         {
 
@@ -56,18 +56,19 @@ namespace CoreLibrary
 
         public long GetPhysicalSize(IElement element)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public IElement DeepCopy(IElement element, string newName)
         {
             throw new NotImplementedException();
 
-            //TODO: Нужно ли это?
-            //            var clone = element.Clone(CopyPrefix);
-            //            //clone.Name = CopyPrefix + clone.Name;
-            //            container.Add(clone);
-            //            return clone;
+            // Project works only with file system
+
+//            var clone = element.Clone(CopyPrefix);
+//            //clone.Name = CopyPrefix + clone.Name;
+//            container.Add(clone);
+//            return clone;
         }
     }
 }

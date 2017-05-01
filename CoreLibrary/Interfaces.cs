@@ -25,8 +25,8 @@ namespace CoreLibrary
 
     public interface IProcessibility
     {
-        object Download(object data);
-        object Upload(object data);
+        byte[] Download(byte[] data);
+        byte[] Upload(byte[] data);
     }
 
     public interface IContainer : IElement
@@ -45,7 +45,5 @@ namespace CoreLibrary
     public interface IVisitor
     {
         void Visit(IElement element);
-        //void VisitFile(File file);
-        //void VisitFolder(Folder folder);
     }
 }

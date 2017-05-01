@@ -17,11 +17,7 @@ namespace CoreLibrary
 
         protected Element(string name)
         {
-            //if (string.IsNullOrEmpty(name))
-            //    return;
-
             Name = name;
-            //Id = Storage.Instance.Insert(this); //TODO: Может быть в Folder.Add() создавать? Но там не получается. Проверить.
         }
 
         public IElement Rename(string name)
@@ -51,14 +47,8 @@ namespace CoreLibrary
 
             return this;
 
-            //TODO: Нужно, чтобы правильно возвращалось значение
+            //TODO: Maybe it'll be better to return the copied object instead of the original?
             //return container.GetChildren().First(c => c.Name == newName);
-
-            //TODO: Или переделать под InMemory, или удалить
-            var clone = Clone(CopyPrefix);
-            //clone.Name = CopyPrefix + clone.Name;
-            container.Add(clone);
-            return clone;
         }
 
         public void Accept(IVisitor visitor)

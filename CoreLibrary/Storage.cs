@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CoreLibrary
 {
@@ -24,19 +22,38 @@ namespace CoreLibrary
         void SetData(IElement element, byte[] data);
         long GetPhysicalSize(IElement element);
         List<IElement> GetElements(IElement element);
-        //TODO: Удалить за ненадобностью? И в классах тоже.
-        //IElement GetElement(string path); //TODO: Вероятно надо заменить path на id, чтобы и для БД подходило по смыслу
         IElement DeepCopy(IElement element, string newName);
     }
 
     public class Storage
     {
-        private Storage()
+        static Storage()
         {
-            
+            lock (Locker)
+            {
+                _type = StorageType.InMemory;
+                Instance = Lazy.Value;
+            }
         }
 
-        private static StorageType _type = StorageType.InMemory;
+        private static StorageType _type;
+
+        public static IStorage Instance { get; private set; }
+
+        private static Lazy<IStorage> Lazy => new Lazy<IStorage>(() =>
+        {
+            switch (_type)
+            {
+                case StorageType.FileSystem:
+                    return new FileSystemStorage();
+                case StorageType.DataBase:
+                    return new DataBaseStorage();
+                default:
+                    return new InMemoryStorage();
+            }
+        });
+
+        private static readonly object Locker = new object();
 
         public static StorageType Type
         {
@@ -46,23 +63,15 @@ namespace CoreLibrary
             }
             set
             {
-                switch (value)
+                lock (Locker)
                 {
-                    case StorageType.FileSystem:
-                        Instance = new FileSystemStorage();
-                        break;
-                    case StorageType.DataBase:
-                        Instance = new DataBaseStorage();
-                        break;
-                    default:
-                        Instance = new InMemoryStorage();
-                        break;
+                    if (_type == value)
+                        return;
+
+                    _type = value;
+                    Instance = Lazy.Value;
                 }
-                _type = value;
             }
         }
-
-        //TODO: Make thread-save instance
-        public static IStorage Instance { get; private set; } = new InMemoryStorage();
     }
 }

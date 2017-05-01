@@ -23,37 +23,24 @@ namespace CoreLibrary
             return Settings.FullPath + GetRelation(id);
         }
 
-        //        public IElement GetElement(string path)
-        //        {
-        //            var dirInfo = new DirectoryInfo(path);
-        //            if (dirInfo.Exists)
-        //                return new Folder(path.Split('\\').Last());
-        //
-        //            var fileInfo = new FileInfo(path);
-        //            if (fileInfo.Exists)
-        //                return new File(path.Split('\\').Last());
-        //
-        //            return null;
-        //        }
-
         public long Insert(IElement element, IContainer parent)
         {
+            //TODO: There is no sense for file system in Id. Have to move it in DBStorage
             element.ParentId = parent.Id;
             element.Id = ++_lastId;
 
             if (!_relativePath.ContainsKey(element.Id))
-                _relativePath.Add(element.Id, GetRelation(parent.Id) + parent.Name + "\\");
+                _relativePath.Add(element.Id, GetRelation(parent.Id) + parent.Name + Path.DirectorySeparatorChar);
 
             var path = GetPath(element.Id);
 
             if (element is File)
             {
-                //TODO: Создавать файл в момент аплоада
-                //TODO: Не всегда файл "отпускается". Понять, как его  отпустить.
-//                var fileInfo = new FileInfo(path + element.Name);
-//                if (!fileInfo.Exists)
-//                    fileInfo.Create();
-                //TODO: Save data to file
+                //File will be created in SetData() 
+                //because without the data there is no sence to create file
+                // var fileInfo = new FileInfo(path + element.Name);
+                // if (!fileInfo.Exists)
+                //    fileInfo.Create();
             }
             else if (element is Folder)
             {
@@ -76,12 +63,12 @@ namespace CoreLibrary
                 new FileInfo(o).MoveTo(n);
             else if (element is Folder)
                 Directory.Move(o, n);
-            //new DirectoryInfo(o).MoveTo(n);
         }
 
         public long Update(IElement element)
         {
-            return element.Id; //TODO: Нужер ли этот метод? Или просто обозначить, что можно что-то изменять у объекта?
+            // Maybe we want to update someting in the  future
+            return element.Id;
         }
 
         public void Delete(IElement element)
@@ -98,20 +85,15 @@ namespace CoreLibrary
             {
                 var dirInfo = new DirectoryInfo(path + element.Name);
                 if (dirInfo.Exists)
-                    //TODO: Bug: Don't know why, but sometimes recursive parameter doesn't work
                     Directory.Delete(dirInfo.FullName, true);
-                //dirInfo.Delete(true);
+                    //dirInfo.Delete(true);
             }
         }
 
         public byte[] GetData(IElement element)
         {
             var path = GetPath(element.Id) + element.Name;
-            var data = System.IO.File.ReadAllBytes(path);
-            return data;
-            //            var fi = new FileInfo(path);
-            //            using (var sr = fi.OpenText())
-            //                return sr.ReadToEnd();
+            return System.IO.File.ReadAllBytes(path);
         }
 
         public long GetPhysicalSize(IElement element)
@@ -134,14 +116,8 @@ namespace CoreLibrary
 
             var path = GetPath(element.Id) + element.Name;
 
-            //System.IO.File.WriteAllBytes(path, data);
-
-            var fi = new FileInfo(path);
-
-            using (var fs = fi.Create())
+            using (var fs = new FileInfo(path).Create())
             {
-                //var info = new UTF8Encoding(true).GetBytes(string);
-                //fs.Write(info, 0, info.Length);
                 fs.Write(data, 0, data.Length);
                 fs.Flush();
                 fs.Close();
@@ -161,7 +137,7 @@ namespace CoreLibrary
             {
                 var dirList = dir.EnumerateDirectories().Select(dirInfo => new Folder(dirInfo.Name));
 
-                var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name, null) { Size = fileInfo.Length });
+                var fileList = dir.EnumerateFiles().Select(fileInfo => new File(fileInfo.Name) { Size = fileInfo.Length });
 
                 list.AddRange(dirList);
                 list.AddRange(fileList);
@@ -176,8 +152,8 @@ namespace CoreLibrary
 
         public IElement DeepCopy(IElement element, string newName)
         {
-            string src = Settings.FullPath + element.Name;
-            string dest = Settings.FullPath + newName;
+            var src = Settings.FullPath + element.Name;
+            var dest = Settings.FullPath + newName;
 
             if (element is File)
             {
@@ -194,21 +170,16 @@ namespace CoreLibrary
 
         private void _DeepCopy(string src, string dest)
         {
-            //TODO: Path.DirectorySeparatorChar - это должно быть везде, а не только здесь
             if (dest[dest.Length - 1] != Path.DirectorySeparatorChar)
                 dest += Path.DirectorySeparatorChar;
 
             if (!Directory.Exists(dest))
                 Directory.CreateDirectory(dest);
 
-            var files = Directory.GetFileSystemEntries(src);
-
-            foreach (string el in files)
+            foreach (var el in Directory.GetFileSystemEntries(src))
             {
-                // Sub directories
                 if (Directory.Exists(el))
                     _DeepCopy(el, dest + Path.GetFileName(el));
-                // Files in directory
                 else
                     System.IO.File.Copy(el, dest + Path.GetFileName(el), true);
             }

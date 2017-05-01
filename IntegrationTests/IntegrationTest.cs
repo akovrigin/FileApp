@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CoreLibrary;
 using Xunit;
 
-namespace UnitTests
+namespace IntegrationTests
 {
     public class IntegrationTest
     {
-        public IntegrationTest()
+        public void Init()
         {
             Storage.Type = StorageType.FileSystem;
             Settings.MainFolder = @"C:\Temp\FileApp\";
@@ -19,28 +15,21 @@ namespace UnitTests
         }
 
         [Fact]
-        public void SequenceTest()
-        {
-            CreateDirectory_CheckIfCreated();
-            DeleteDirectory_CheckIfDeleted();
-
-            //GetSize_SelectMainFolder_CheckSize();
-            //GetFolder_Rename_CheckIfRenamed();
-
-            CopyDirectory_DirectoriesAndFilesRecursivelyCreated();
-            //CopyFile_FileCopied();
-        }
-
         public void GetSize_SelectMainFolder_CheckSize()
         {
+            Init();
+
             var mainFolder = new Folder("");
             var size = mainFolder.GetSize();
             Assert.Equal(25, size);
         }
 
+        [Fact]
         public void GetFolder_Rename_CheckIfRenamed()
         {
-            Settings.RelativePath = @"First\";
+            Init();
+
+            Settings.RelativePath = "First";
             var o = Settings.FullPath + "Second";
             var n = Settings.FullPath + "Second1";
 
@@ -62,6 +51,15 @@ namespace UnitTests
             folder.Rename("Second");
         }
 
+        [Fact]
+        public void CreateDirectory_CheckIfCreated_DeleteDirectory_CheckIfDeleted()
+        {
+            Init();
+
+            CreateDirectory_CheckIfCreated();
+            DeleteDirectory_CheckIfDeleted();
+        }
+
         public void CreateDirectory_CheckIfCreated()
         {
             var mainFolder = new Folder("First");
@@ -69,7 +67,7 @@ namespace UnitTests
             var dir = new Folder("Test");
             mainFolder.Add(dir);
 
-            Settings.RelativePath = @"First\";
+            Settings.RelativePath = "First";
 
             var dirInfo = new DirectoryInfo(Settings.FullPath + dir.Name);
 
@@ -91,41 +89,47 @@ namespace UnitTests
             Assert.False(dirInfo.Exists);
         }
 
+        [Fact]
         public void CopyDirectory_DirectoriesAndFilesRecursivelyCreated()
         {
+            Init();
+
             var parent = new Folder("Third");
 
             var folder = parent.GetChildren().First(c => c.Name == "Fourth");
 
-            Settings.RelativePath = @"Third\";
+            Settings.RelativePath = "Third";
 
-            var nf = ((ICopiable)folder).Copy(parent);
+            ((ICopiable)folder).Copy(parent);
 
             var path = @"C:\Temp\FileApp\Third\Copy of Fourth\";
             var di = new DirectoryInfo(path);
             Assert.True(di.Exists);
 
-            di = new DirectoryInfo(path + "Fifth\\");
+            di = new DirectoryInfo(path + @"Fifth\");
             Assert.True(di.Exists);
 
             path = @"C:\Temp\FileApp\Third\Copy of Fourth\";
-            var fi = new FileInfo(path + "file_f1.txt.txt");
+            var fi = new FileInfo(path + "file_f1.txt");
             Assert.True(fi.Exists);
 
             Directory.Delete(path, true);
         }
 
+        [Fact]
         public void CopyFile_FileCopied()
         {
+            Init();
+
             var parent = new Folder("Third");
 
-            var folder = parent.GetChildren().First(c => c.Name == "file_t1.txt.txt"); //TODO: убрать кривизну с двумя txt.txt
+            var folder = parent.GetChildren().First(c => c.Name == "file_t1.txt");
 
-            Settings.RelativePath = @"Third\";
+            Settings.RelativePath = "Third";
 
-            var nf = ((ICopiable)folder).Copy(parent);
+            ((ICopiable)folder).Copy(parent);
 
-            var path = @"C:\Temp\FileApp\Third\Copy of file_t1.txt.txt";
+            var path = @"C:\Temp\FileApp\Third\Copy of file_t1.txt";
 
             Assert.True(new FileInfo(path).Exists);
 
