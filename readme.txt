@@ -7,6 +7,7 @@ Description: https://github.com/akovrigin/FileApp/blob/master/WebApp/FileApp.doc
 Source code: https://github.com/akovrigin/FileApp
 
 Deployment:
+This project uses Telerik ASP.NET WebForms components (telerik.com), so it's necessary to install it first.
 Get source code and build project in Visual Studio.
 Application (WebApp) can be executed directly from Visual Studio. In this case the simple way is to deploy it on IIS Express (by default) and go to url: http://localhost:64055/Default.aspx
 
