@@ -1,6 +1,6 @@
 ASP.NET File Application
 
-Problem: realization the requirements of "ASP.NET File Application"
+Problem: the implementation the requirements of "ASP.NET File Application"
 
 Description: https://github.com/akovrigin/FileApp/blob/master/WebApp/FileApp.doc
 
